@@ -12,8 +12,8 @@ export async function fetchTransactions(
         "Basic " + process.env.NEXT_PUBLIC_TRANSACTION_API_BASE64_AUTH_TOKEN,
       "Content-Type": "application/json",
       "ngrok-skip-browser-warning": "1231",
-      "mode": 'no-cors'
     }),
+    mode: "cors",
   });
 
   if (!response.ok) {
