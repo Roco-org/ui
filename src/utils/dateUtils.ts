@@ -1,4 +1,4 @@
-// utils/dateUtils.js
+// utils/dateUtils.ts
 import { startOfWeek, isMonday, subWeeks } from 'date-fns';
 
 /**
@@ -6,7 +6,7 @@ import { startOfWeek, isMonday, subWeeks } from 'date-fns';
  * @param {Date} date 
  * @returns {string}
  */
-export const formatDate = (date) => {
+export const formatDate = (date: Date): string => {
   return date.toISOString().split("T")[0];
 };
 
@@ -14,13 +14,13 @@ export const formatDate = (date) => {
  * Returns today's date in 'YYYY-MM-DD' format.
  * @returns {string}
  */
-export const getToday = () => formatDate(new Date());
+export const getToday = (): string => formatDate(new Date());
 
 /**
  * Returns the 19th of last month in 'YYYY-MM-DD' format.
  * @returns {string}
  */
-export const getLast19th = () => {
+export const getLast19th = (): string => {
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth(); // 0-based (0 = January)
@@ -48,7 +48,7 @@ export const getLast19th = () => {
  * Returns the names of the current and next month.
  * @returns { { currentMonth: string, nextMonth: string } }
  */
-export const getMonthNames = () => {
+export const getMonthNames = (): { currentMonth: string; nextMonth: string } => {
   const currentDate = new Date();
   const monthIndex =
     currentDate.getDate() > 19
@@ -73,7 +73,7 @@ export const getMonthNames = () => {
  * @param {string} dateStr 
  * @returns {string}
  */
-export const formatDateForDisplay = (dateStr) => {
+export const formatDateForDisplay = (dateStr: string): string => {
   // Validate the input format using a regular expression
   const regex = /^\d{4}-\d{2}-\d{2}$/;
   if (!regex.test(dateStr)) {
@@ -92,7 +92,7 @@ export const formatDateForDisplay = (dateStr) => {
   }
 
   // Define options for formatting
-  const options = {
+  const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "short", // "Oct"
     day: "numeric", // "23"
@@ -109,7 +109,7 @@ export const formatDateForDisplay = (dateStr) => {
  * @param {Date} date - The reference date.
  * @returns {Date} - The last Monday.
  */
-export function getLastMonday(date: string) {
+export function getLastMonday(date: Date): Date {
   if (isMonday(date)) {
     // If today is Monday, get the Monday of the previous week
     return subWeeks(date, 1);
