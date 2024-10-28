@@ -1,13 +1,26 @@
-// Helper function to format dates as 'YYYY-MM-DD'
-export const formatDate = (date: Date): string => {
+// utils/dateUtils.js
+import { startOfWeek, isMonday, subWeeks } from 'date-fns';
+
+/**
+ * Formats a Date object as 'YYYY-MM-DD'.
+ * @param {Date} date 
+ * @returns {string}
+ */
+export const formatDate = (date) => {
   return date.toISOString().split("T")[0];
 };
 
-// Get today's date in 'YYYY-MM-DD' format
-export const getToday = (): string => formatDate(new Date());
+/**
+ * Returns today's date in 'YYYY-MM-DD' format.
+ * @returns {string}
+ */
+export const getToday = () => formatDate(new Date());
 
-// Get the 19th of last month in 'YYYY-MM-DD' format
-export const getLast19th = (): string => {
+/**
+ * Returns the 19th of last month in 'YYYY-MM-DD' format.
+ * @returns {string}
+ */
+export const getLast19th = () => {
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth(); // 0-based (0 = January)
@@ -31,10 +44,11 @@ export const getLast19th = (): string => {
   return formatDate(targetDate);
 };
 
-export const getMonthNames = (): {
-  currentMonth: string;
-  nextMonth: string;
-} => {
+/**
+ * Returns the names of the current and next month.
+ * @returns { { currentMonth: string, nextMonth: string } }
+ */
+export const getMonthNames = () => {
   const currentDate = new Date();
   const monthIndex =
     currentDate.getDate() > 19
@@ -54,7 +68,12 @@ export const getMonthNames = (): {
   return { currentMonth, nextMonth };
 };
 
-export const formatDateForDisplay = (dateStr: string): string => {
+/**
+ * Formats a date string 'YYYY-MM-DD' for display.
+ * @param {string} dateStr 
+ * @returns {string}
+ */
+export const formatDateForDisplay = (dateStr) => {
   // Validate the input format using a regular expression
   const regex = /^\d{4}-\d{2}-\d{2}$/;
   if (!regex.test(dateStr)) {
@@ -73,7 +92,7 @@ export const formatDateForDisplay = (dateStr: string): string => {
   }
 
   // Define options for formatting
-  const options: Intl.DateTimeFormatOptions = {
+  const options = {
     year: "numeric",
     month: "short", // "Oct"
     day: "numeric", // "23"
@@ -82,3 +101,19 @@ export const formatDateForDisplay = (dateStr: string): string => {
   // Format the date
   return date.toLocaleDateString("en-US", options);
 };
+
+/**
+ * Returns the last Monday relative to the given date.
+ * If the given date is Monday, it returns the Monday from the previous week.
+ *
+ * @param {Date} date - The reference date.
+ * @returns {Date} - The last Monday.
+ */
+export function getLastMonday(date: string) {
+  if (isMonday(date)) {
+    // If today is Monday, get the Monday of the previous week
+    return subWeeks(date, 1);
+  }
+  // Otherwise, get the Monday of the current week
+  return startOfWeek(date, { weekStartsOn: 1 }); // weekStartsOn: 1 => Monday
+}
