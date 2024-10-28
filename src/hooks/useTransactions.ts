@@ -25,11 +25,11 @@ interface UseTransactionsReturn {
 
 export function useTransactions(startDate: Date | null, endDate: Date | null): UseTransactionsReturn {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [totalAmount, setTotalAmount] = useState(0);
-  const [averageAmount, setAverageAmount] = useState(0);
-  const [maxAmount, setMaxAmount] = useState(0);
-  const [avgTransactionsPerDay, setAvgTransactionsPerDay] = useState(0);
-  const [amountSpentToday, setAmountSpentToday] = useState(0);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [averageAmount, setAverageAmount] = useState<number>(0);
+  const [maxAmount, setMaxAmount] = useState<number>(0);
+  const [avgTransactionsPerDay, setAvgTransactionsPerDay] = useState<number>(0);
+  const [amountSpentToday, setAmountSpentToday] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,13 +47,13 @@ export function useTransactions(startDate: Date | null, endDate: Date | null): U
         return;
       }
 
-      async function fetchData() {
+      const fetchData = async () => {
         setLoading(true);
         setError(null);
         try {
           // Format dates to 'YYYY-MM-DD'
-          const formattedStart = format(startDate, "yyyy-MM-dd");
-          const formattedEnd = format(endDate, "yyyy-MM-dd");
+          const formattedStart: string = format(startDate, "yyyy-MM-dd");
+          const formattedEnd: string = format(endDate, "yyyy-MM-dd");
 
           // Fetch transactions based on the date range
           const data: Transaction[] = await fetchTransactions(formattedStart, formattedEnd);
@@ -67,21 +67,25 @@ export function useTransactions(startDate: Date | null, endDate: Date | null): U
           setAvgTransactionsPerDay(metrics.avgPerDay);
 
           // Calculate amount spent today
-          const todayFormatted = format(new Date(), "yyyy-MM-dd");
-          const todayAmount = data.reduce((acc, transaction) => {
+          const todayFormatted: string = format(new Date(), "yyyy-MM-dd");
+          const todayAmount: number = data.reduce((acc, transaction) => {
             if (transaction.date === todayFormatted) {
               return acc + transaction.amount;
             }
             return acc;
           }, 0);
           setAmountSpentToday(todayAmount);
-        } catch (err) {
+        } catch (err: unknown) {
           console.error("Error fetching transactions:", err);
-          setError("Failed to fetch transactions. Please try again later.");
+          if (err instanceof Error) {
+            setError(err.message);
+          } else {
+            setError("Failed to fetch transactions. Please try again later.");
+          }
         } finally {
           setLoading(false);
         }
-      }
+      };
 
       fetchData();
 

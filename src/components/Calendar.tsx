@@ -1,6 +1,5 @@
 // components/Calendar.tsx
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
 import {
   add,
   eachDayOfInterval,
@@ -21,11 +20,11 @@ interface CalendarProps {
   onDateRangeChange: (start: Date | null, end: Date | null) => void;
 }
 
-function classNames(...classes: string[]) {
+function classNames(...classes: (string | false | undefined | null)[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
-const colStartClasses = [
+const colStartClasses: string[] = [
   "",
   "col-start-2",
   "col-start-3",
@@ -35,38 +34,39 @@ const colStartClasses = [
   "col-start-7",
 ];
 
-export default function Calendar({ startDate, endDate, onDateRangeChange }: CalendarProps) {
-  const [currentMonth, setCurrentMonth] = React.useState<string>(
+const Calendar: React.FC<CalendarProps> = ({ startDate, endDate, onDateRangeChange }) => {
+  const [currentMonth, setCurrentMonth] = useState<string>(
     startDate ? format(startDate, "MMM-yyyy") : format(new Date(), "MMM-yyyy")
   );
 
   // Update currentMonth if startDate changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (startDate) {
       setCurrentMonth(format(startDate, "MMM-yyyy"));
     }
   }, [startDate]);
 
-  const firstDayCurrentMonth = parse(currentMonth, "MMM-yyyy", new Date());
+  const firstDayCurrentMonth: Date = parse(currentMonth, "MMM-yyyy", new Date());
 
-  const days = eachDayOfInterval({
+  const days: Date[] = eachDayOfInterval({
     start: firstDayCurrentMonth,
     end: endOfMonth(firstDayCurrentMonth),
   });
 
-  const previousMonth = () => {
-    const firstDayPrevMonth = add(firstDayCurrentMonth, { months: -1 });
+  // Arrow functions to prevent function declarations inside blocks
+  const previousMonth = (): void => {
+    const firstDayPrevMonth: Date = add(firstDayCurrentMonth, { months: -1 });
     setCurrentMonth(format(firstDayPrevMonth, "MMM-yyyy"));
   };
 
-  const nextMonth = () => {
-    const firstDayNextMonth = add(firstDayCurrentMonth, { months: 1 });
+  const nextMonth = (): void => {
+    const firstDayNextMonth: Date = add(firstDayCurrentMonth, { months: 1 });
     setCurrentMonth(format(firstDayNextMonth, "MMM-yyyy"));
   };
 
   // Function to handle day selection
-  const handleDayClick = (day: Date) => {
-    const today = new Date();
+  const handleDayClick = (day: Date): void => {
+    const today: Date = new Date();
 
     if (isAfter(day, today)) {
       // Do not allow selecting future dates
@@ -89,7 +89,7 @@ export default function Calendar({ startDate, endDate, onDateRangeChange }: Cale
   };
 
   // Function to check if a day is within the selected range
-  const isInRange = (day: Date) => {
+  const isInRange = (day: Date): boolean => {
     if (startDate && endDate) {
       return isAfter(day, startDate) && isBefore(day, endDate);
     }
@@ -167,15 +167,17 @@ export default function Calendar({ startDate, endDate, onDateRangeChange }: Cale
                   onClick={() => handleDayClick(day)}
                   className={classNames(
                     // Start Date
-                    isEqual(day, startDate) && "text-white bg-black rounded-l-full",
+                    startDate && isEqual(day, startDate) && "text-white bg-black rounded-l-full",
                     // End Date
-                    isEqual(day, endDate) && "text-white bg-black rounded-r-full",
+                    endDate && isEqual(day, endDate) && "text-white bg-black rounded-r-full",
                     // In-Range Dates
                     isInRange(day) && "bg-gray-300",
                     // Today
                     isToday(day) && "border border-red-300",
                     // Dates in Current Month
-                    !isEqual(day, startDate) &&
+                    startDate &&
+                      endDate &&
+                      !isEqual(day, startDate) &&
                       !isEqual(day, endDate) &&
                       isSameMonth(day, firstDayCurrentMonth) &&
                       "text-gray-900",
@@ -201,11 +203,7 @@ export default function Calendar({ startDate, endDate, onDateRangeChange }: Cale
       </div>
     </div>
   );
-}
-
-Calendar.propTypes = {
-  startDate: PropTypes.instanceOf(Date),
-  endDate: PropTypes.instanceOf(Date),
-  onDateRangeChange: PropTypes.func.isRequired,
 };
 
+// Removed PropTypes as TypeScript handles prop validation
+export default Calendar;
