@@ -13,7 +13,7 @@ import { format } from "date-fns"; // Ensure date-fns is installed
 export default function SummaryPage() {
   // Calculate today and last Monday
   const today = new Date(); // Current date
-  const lastMonday = getLastMonday(today.toISOString()); // Last Monday
+  const lastMonday = getLastMonday(today); // Last Monday
 
   // State to manage startDate and endDate
   const [startDate, setStartDate] = useState<Date | null>(lastMonday);
